@@ -11,6 +11,8 @@ import importlib
 import probabilityFlavourText
 from Zebt import Zebt
 import TTM
+from pathlib import Path
+import os
 
 _zebt = Zebt()
 bot = commands.Bot(command_prefix="!")
@@ -148,6 +150,25 @@ async def tt200m(ctx, arg1, arg2 = "EHP", arg3 = "Main"):
 async def tt200m_error(ctx, error):
     await ctx.send(str(error))
     print(error)
+
+@bot.command()
+async def rates(ctx, discord_handle = None):
+    """Shows a list of rates the mentioned person has uploaded:
+        !rates ?@name
+    parameters:
+        discord_handle - The discord handle of the person (@them)
+        ignoretrash - Whether to exclude the drops generally considered trash (jars, etc)
+    
+    Note: ? denotes optional."""
+    discord_id = ctx.author.id
+    if discord_handle != None:
+        discord_id = int(discord_handle[3:-1])
+    owners_name = bot.get_user(discord_id).name
+    title = "Rates uploaded by " + owners_name
+    folder_path = Path("xp_rates") / str(discord_id)
+    description = "\n".join(os.listdir(folder_path))
+    embed = discord.Embed(title=title, description=description)
+    await ctx.send(embed=embed)
 
 @bot.command()
 async def finish(ctx, name: str, trials = 1, extraArg1 = "True", extraArg2 = "False"):
