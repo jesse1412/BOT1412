@@ -12,6 +12,11 @@ LEVEL_99_XP = 13034431
 TWO_HUNDRED_MIL_XP = 200000000
 
 def add_rate(file_url, rate_owner, rate_name, folder_path = Path("xp_rates")):
+    file_contents = requests.get(file_url)
+    try:
+        json.loads(file_contents)
+    except:
+        raise Exception("Invalid JSON file '{}' at URL: {}\nRates not added.".format(rate_name, file_url))
     owners_folder_path = folder_path / rate_owner
     file_path = owners_folder_path / rate_name
     if not owners_folder_path.exists():

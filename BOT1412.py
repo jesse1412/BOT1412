@@ -98,6 +98,11 @@ async def ttm(ctx, arg1, arg2 = "EHP", arg3 = "Main"):
         embed.set_footer(text="Time to max: " + str(ttm))
         await ctx.send(embed=embed)
 
+@ttm.error
+async def ttm_error(ctx, error):
+    await ctx.send(str(error))
+    print(error)
+
 @bot.command()
 async def tt200m(ctx, arg1, arg2 = "EHP", arg3 = "Main"):
     """Check your TTM with custom, saved xp rates
@@ -138,6 +143,11 @@ async def tt200m(ctx, arg1, arg2 = "EHP", arg3 = "Main"):
             embed.add_field(name="Anything", value="0, you're already 200m!")
         embed.set_footer(text="Time to 200m: " + str(ttm))
         await ctx.send(embed=embed)
+
+@tt200m.error
+async def tt200m_error(ctx, error):
+    await ctx.send(str(error))
+    print(error)
 
 @bot.command()
 async def finish(ctx, name: str, trials = 1, extraArg1 = "True", extraArg2 = "False"):
