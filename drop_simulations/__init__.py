@@ -1,6 +1,7 @@
 import importlib
-import drop_simulation
 import copy
+
+import drop_simulation
 
 DROP_SIMULATIONS = "drop_simulations"
 

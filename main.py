@@ -1,18 +1,20 @@
+import importlib
+import json
+import os
+import pkgutil
+from fractions import Fraction
+from pathlib import Path
+
 import discord
 from discord.ext import commands
+
 import drop_simulations
-from roles import allowed_roles
-from drop_simulations import tob
-import json
-from discord_token import DISCORD_TOKEN
-from fractions import Fraction
-import pkgutil
-import importlib
 import probability_flavour_text
-from debt import Debt
 import time_to_max as TTM
-from pathlib import Path
-import os
+from debt import Debt
+from drop_simulations import tob
+from discord_token import DISCORD_TOKEN
+from roles import allowed_roles
 
 _debt = Debt()
 bot = commands.Bot(command_prefix="!")

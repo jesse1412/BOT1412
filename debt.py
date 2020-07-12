@@ -1,7 +1,7 @@
-import io
-from pathlib import Path
-import pickle
 import copy
+import io
+import pickle
+from pathlib import Path
 
 class Debt():
     def __init__(self, file_path = Path("debt_list.pickle")):

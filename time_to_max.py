@@ -1,9 +1,9 @@
 import io
-from pathlib import Path
 import json
-import requests
-import os
 import numpy
+import os
+import requests
+from pathlib import Path
 from scipy.optimize import linprog
 
 LOOKUP_PATH = "https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player="

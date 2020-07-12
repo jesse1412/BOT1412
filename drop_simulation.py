@@ -1,9 +1,8 @@
-import random
-from functools import reduce
-import threading
-from multiprocessing import cpu_count
-from multiprocessing import Process, Value, Manager
 import multiprocessing
+import random
+import threading
+from functools import reduce
+from multiprocessing import cpu_count, Process, Value, Manager
 
 def thread_thing(trials, unique_items, drop_tables, cummulative_kc, cummulative_item_kcs, cummulative_items_found, lock):
     local_cumulative_items_found = {}
