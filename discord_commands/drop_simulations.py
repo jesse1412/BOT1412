@@ -53,9 +53,13 @@ async def cmd_dry(ctx, name: str, trials = 100, extraArg1 = "True", extraArg2 = 
         ignoretrash - Whether to exclude the drops generally considered trash (jars, etc)
     
     Note: ? denotes optional. * denotes boolean (True or False, case sensitive))"""
+    # Tob drop table varies based on various factors.
     if name == "tob":
+        # If dry command called for ToB, this arg represents team size.
         if extraArg1 == "True":
+            # Replace the default value.
             extraArg1 = "4"
+        # The second extra arg represents MvP in all rooms or not.
         probability = tob.dry(trials, int(extraArg1), extraArg2 == "True")
         title = "Chance of going " + str(trials) + " dry at the Theatre of Blood, with a team size of " + \
             extraArg1 + ""
@@ -65,7 +69,7 @@ async def cmd_dry(ctx, name: str, trials = 100, extraArg1 = "True", extraArg2 = 
             title += ", where you get MvP in every room:\n\n" 
         title += str(probability * 100) + "%\n"
     else:
-        probability, trash_drops = drop_simulations.dry(name, trials, extraArg1 == True)
+        probability, trash_drops = drop_simulations.dry(name, trials, extraArg1 == "True")
         title = "Chance of going " + str(trials) + " dry at " + name + ": " + str(probability * 100) + "%\n"
     description = probability_flavour_text.get_flavour(probability)
     embed = discord.Embed(title=title, description=description)

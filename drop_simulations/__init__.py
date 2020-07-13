@@ -23,7 +23,7 @@ def simulate(name, trials, ignoreTrash):
         drop_tables = module.drop_tables
         if ignoreTrash:
             drop_tables = removeTrash(drop_tables, module.trash_drops)
-        return drop_simulation.simulate(drop_tables, trials) + (module.trash_drops,)
+        return drop_simulation.threaded_simulation(drop_tables, trials) + (module.trash_drops,)
     raise Exception("Invalid name provided.")
 
 def dry(name, trials, ignoreTrash):
