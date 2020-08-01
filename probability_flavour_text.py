@@ -8,7 +8,7 @@ def get_flavour(probability):
     elif probability < 10**-21:
         description = "If we bottled every drop of water in the world into 1L bottles and added a winning gold ticket to one, you'd be more likely to pick the right bottle than go this dry."
     elif probability < 10**-17:
-        description = "Why don't you pick two random seconds out of the history of lets say... The entire time the universe has existed? You're less more to pick two consecutive seconds than go this dry..."
+        description = "Why don't you pick two random seconds out of the history of lets say... The entire time the universe has existed? You're more likely to pick two consecutive seconds than go this dry..."
     elif probability < 10**-13:
         description = "Do you have a least favourite cell in your body? That'd be one unlucky cell... More unlucky than you going on this dry ."
     elif probability < 10**-11:
