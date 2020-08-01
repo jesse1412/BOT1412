@@ -22,14 +22,17 @@ async def cmd_finish(ctx, name: str, trials = 1, extraArg1 = "True", extraArg2 =
         if name.lower() == "tob":
             if extraArg1 == "True":
                 extraArg1 = "4"
-            title = "Simulation of " + str(trials) + " Theatre of Blood completions, with a team size of " + extraArg1
+            if trials > 1:
+                title = "Simulation of " + str(trials) + " Theatre of Blood completions, with a team size of " + extraArg1
+            else:
+                title = "Simulation of a Theatre of Blood completion, with a team size of " + extraArg1
             if extraArg2 == "False":
                 title += ", where you do not get MvP in any room"
             else: 
                 title += ", where you get MvP in every room"
             average_kc, average_item_kcs, average_items_found, trash_drops = tob.simulate(trials, int(extraArg1), extraArg2 == "True")
         else:
-            title = "Simulation of " + str(trials) + " " + name + " completions"
+            title = "Simulation of " + str(trials) + " " + name + " completion(s)"
             average_kc, average_item_kcs, average_items_found, trash_drops = drop_simulations.simulate(name, trials, extraArg1 == "True")
         for itemName in average_item_kcs.keys():
             empirical_rate = average_items_found[itemName] / average_kc
