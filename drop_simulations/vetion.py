@@ -16,6 +16,6 @@ drop_tables = [
                 }
             ]
 
-trash_drops = ["Dragon 2h sword", "Skeleton"]
+trash_drops = ["Dragon 2h sword", "Skeleton champion scroll"]
 
 description = "SPOOKY SCARY SKELINGTON."
