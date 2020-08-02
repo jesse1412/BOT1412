@@ -74,7 +74,5 @@ async def cmd_dry(ctx, name: str, trials = 100, extraArg1 = "True", extraArg2 = 
     description = probability_flavour_text.get_flavour(probability)
     embed = discord.Embed(title=title, description=description)
     if extraArg1 == "True" and name != "tob":
-        last_trash_drop = trash_drops.pop()
-        embed.set_footer(text="Ignored drops: " + ", ".join(trash_drops) + " and " + last_trash_drop)
-        trash_drops.append(last_trash_drop)
+        embed.set_footer(text="Ignored drops: " + ", ".join(trash_drops[slice(0,-1)]) + " and " + trash_drops[-1])
     await ctx.send(embed=embed)
