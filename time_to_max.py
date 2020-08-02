@@ -11,6 +11,10 @@ WEB_ID_SKILLS = ["attack","defence","strength","hitpoints","range","prayer","mag
 LEVEL_99_XP = 13034431
 TWO_HUNDRED_MIL_XP = 200000000
 
+def verify_path(acceptable_path: Path, provided_path: Path):
+    provided_path_abs = provided_path.resolve()
+    return provided_path_abs.match(acceptable_path.as_posix())
+
 def add_rate(file_url, rate_owner, rate_name, folder_path = Path("xp_rates")):
     file_contents = requests.get(file_url)
     try:
@@ -19,6 +23,8 @@ def add_rate(file_url, rate_owner, rate_name, folder_path = Path("xp_rates")):
         raise Exception("Invalid JSON file '{}' at URL: {}\nRates not added.".format(rate_name, file_url))
     owners_folder_path = folder_path / rate_owner
     file_path = owners_folder_path / rate_name
+    if not verify_path(folder_path / "*" / "*", file_path):
+        return
     if not owners_folder_path.exists():
         os.makedirs(owners_folder_path)
     with open(file_path, "w+") as writer:
@@ -26,6 +32,8 @@ def add_rate(file_url, rate_owner, rate_name, folder_path = Path("xp_rates")):
 
 def get_rates(rate_owner, rate_name, folder_path = Path("xp_rates")):
     file_path = folder_path / rate_owner / rate_name
+    if not verify_path(folder_path / "*" / "*", file_path):
+        return None
     if file_path.exists():
         with open(file_path) as reader:
             url = reader.read()
