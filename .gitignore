@@ -7,3 +7,11 @@ debt_list.pickle
 /TTM2.py
 **.orig
 **.idea
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.vscode
