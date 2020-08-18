@@ -6,12 +6,16 @@ import drop_simulations
 import probability_flavour_text
 from drop_simulations import tob
 
-async def cmd_finish(ctx, name: str, trials = 1, extraArg1 = "True", extraArg2 = "False"):
-    if trials > 10000:
-            await ctx.send("I like to actually use my PC, prick, 10k completions for you. If you tried Zulrah then double fuck you, my PC weeps.")
-            trials = 10000
+MAX_TRIALS = 10000
+
+async def cmd_finish(ctx, name: str, trials = 1, variable_arg = "True", mvp_all_rooms = "False"):
+    if trials > MAX_TRIALS:
+            await ctx.send("Limit exceeded, rolling maximum ({}).".format(MAX_TRIALS))
+            trials = MAX_TRIALS
     elif trials < 1:
         trials = 1
+    ignore_trash = variable_arg.lower() == "true"
+    mvp_all_rooms = mvp_all_rooms.lower() == "true"
     average_kc = 0
     average_item_kcs = {}
     average_items_found = {}
@@ -20,34 +24,36 @@ async def cmd_finish(ctx, name: str, trials = 1, extraArg1 = "True", extraArg2 =
     embed = discord.Embed(description=description)
     async with ctx.typing():
         if name.lower() == "tob":
-            if extraArg1 == "True":
-                extraArg1 = "4"
-            if trials > 1:
-                title = "Simulation of " + str(trials) + " Theatre of Blood completions, with a team size of " + extraArg1
-            else:
-                title = "Simulation of a Theatre of Blood completion, with a team size of " + extraArg1
-            if extraArg2 == "False":
-                title += ", where you do not get MvP in any room"
-            else: 
-                title += ", where you get MvP in every room"
-            average_kc, average_item_kcs, average_items_found, trash_drops = tob.simulate(trials, int(extraArg1), extraArg2 == "True")
+            team_size = 4
+            if variable_arg.isnumeric():
+                team_size = max(1, min(5, variable_arg))
+            mvp_text = "where you do not get MvP in any room"
+            if mvp_all_rooms:
+                mvp_text = "where you get MvP in every room"
+            title = "Simulation of {} Theatre of Blood completion(s), with a team size of {} {}".format(
+                str(trials), 
+                mvp_text,
+                team_size)
+            average_kc, average_item_kcs, average_items_found, trash_drops = tob.simulate(trials, team_size, mvp_all_rooms)
         else:
-            title = "Simulation of " + str(trials) + " " + name + " completion(s)"
-            average_kc, average_item_kcs, average_items_found, trash_drops = drop_simulations.simulate(name, trials, extraArg1 == "True")
+            title = "Simulation of {} {} completion(s)".format(str(trials), name)
+            average_kc, average_item_kcs, average_items_found, trash_drops = drop_simulations.simulate(name, trials, variable_arg.lower() == "true")
         for itemName in average_item_kcs.keys():
             empirical_rate = average_items_found[itemName] / average_kc
             empirical_rate_frac = Fraction(empirical_rate).limit_denominator(100000)
             empirical_rate_frac_simplified = Fraction(1, round(empirical_rate_frac.denominator / empirical_rate_frac.numerator))
-            embed.add_field(name=itemName, value="Amount: " + str(average_items_found[itemName]) + "\nFirst seen: " + str(average_item_kcs[itemName]) + \
-                "\nEmpirical rate: " + str(empirical_rate_frac_simplified))
+            embed.add_field(name=itemName, value="Amount: {}\nFirst seen: {}\nEmpirical rate: {}".format(
+                str(round(average_items_found[itemName], 3)), 
+                str(round(average_item_kcs[itemName], 3)),
+                str(empirical_rate_frac_simplified)))
         footer = "Average completion KC: " + str(average_kc)
-        if extraArg1 == "True" and len(trash_drops) > 0:
-            footer = footer + "\nIgnored drops: " + str(trash_drops)
+        if ignore_trash and len(trash_drops) > 0:
+            footer = footer + "\nIgnored drops: " + ", ".join(trash_drops[slice(0,-1)]) + ", and " + trash_drops[-1]
         embed.set_footer(text=footer)
     embed.title = title
     await ctx.send(embed=embed)
 
-async def cmd_dry(ctx, name: str, trials = 100, extraArg1 = "True", extraArg2 = "False"):
+async def cmd_dry(ctx, name: str, trials = 100, variable_arg = "True", mvp_all_rooms = "False"):
     """Calculates the probability of a dry streak at an activity.
     Syntax:
         !dry activity ?*ignoretrash
@@ -56,26 +62,33 @@ async def cmd_dry(ctx, name: str, trials = 100, extraArg1 = "True", extraArg2 = 
         ignoretrash - Whether to exclude the drops generally considered trash (jars, etc)
     
     Note: ? denotes optional. * denotes boolean (True or False, case sensitive))"""
-    # Tob drop table varies based on various factors.
+    ignore_trash = variable_arg.lower() == "true"
+    mvp_all_rooms = mvp_all_rooms.lower() == "true"
+    if trials < 1:
+        trials = 1
     if name == "tob":
         # If dry command called for ToB, this arg represents team size.
-        if extraArg1 == "True":
-            # Replace the default value.
-            extraArg1 = "4"
-        # The second extra arg represents MvP in all rooms or not.
-        probability = tob.dry(trials, int(extraArg1), extraArg2 == "True")
-        title = "Chance of going " + str(trials) + " dry at the Theatre of Blood, with a team size of " + \
-            extraArg1 + ""
-        if extraArg2 == "False":
-            title += ", where you do not get MvP in any room:\n\n"
-        else: 
-            title += ", where you get MvP in every room:\n\n" 
-        title += str(probability * 100) + "%\n"
+        team_size = 4
+        if variable_arg.isnumeric():
+            team_size = max(1, min(5, int(variable_arg)))
+        probability = tob.dry(trials, team_size, mvp_all_rooms)
+        mvp_text = "where you do not get MvP in any room"
+        if mvp_all_rooms:
+            mvp_text = "where you get MvP in every room"
+        title = "Chance of going {} dry at the Theatre of Blood, with a team size of {} {}: {}%\n".format(
+            trials,
+            team_size,
+            mvp_text,
+            probability * 100)
     else:
-        probability, trash_drops = drop_simulations.dry(name, trials, extraArg1 == "True")
-        title = "Chance of going " + str(trials) + " dry at " + name + ": " + str(probability * 100) + "%\n"
+        probability, trash_drops = drop_simulations.dry(name, trials, ignore_trash)
+        title = "Chance of going {} dry at {}: {}%\n".format(
+            trials,
+            name,
+            probability * 100
+        )
     description = probability_flavour_text.get_flavour(probability)
     embed = discord.Embed(title=title, description=description)
-    if extraArg1 == "True" and name != "tob":
-        embed.set_footer(text="Ignored drops: " + ", ".join(trash_drops[slice(0,-1)]) + " and " + trash_drops[-1])
+    if ignore_trash and name != "tob":
+        embed.set_footer(text="Ignored drops: " + ", ".join(trash_drops[slice(0,-1)]) + ", and " + trash_drops[-1])
     await ctx.send(embed=embed)
