@@ -42,11 +42,11 @@ class Debt():
             is_additive = change_text[0] == "+" or change_text[0] == "-"
         change_val = resolve_suffix(change_text)
         new_debt_value = 0
-        if not name in self.__debt_list:
-            new_debt_value = change_val
-            self.__debt_list[name] = {}
+        if not name_2 in self.__debt_list_reverse:
             self.__debt_list_reverse[name_2] = {}
-        elif not is_additive:
+        if not name in self.__debt_list:
+            self.__debt_list[name] = {}
+        if not is_additive:
             new_debt_value = change_val
         else:
             if name_2 in self.__debt_list[name]:
